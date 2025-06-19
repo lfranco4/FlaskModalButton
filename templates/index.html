@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTMX Modal Input with CSS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+  <style>
+    /* Centering and page layout */
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    /* Main button */
+    #openModalBtn {
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 6px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    #openModalBtn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Modal overlay */
+    .modal {
+      display: block; /* Always block to allow animation */
+      opacity: 0;
+      pointer-events: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      transition: opacity 0.3s ease;
+    }
+
+    /* When modal is visible */
+    .modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Modal content box */
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transform: translateY(-30px);
+      transition: transform 0.3s ease;
+    }
+
+    /* When modal is visible */
+    .modal.show .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-header, .modal-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header {
+      margin-bottom: 10px;
+    }
+
+    .modal-footer {
+      margin-top: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Center Button -->
+  <button id="openModalBtn">Open Modal</button>
+
+  <!-- Modal -->
+  <div id="inputModal" class="modal">
+    <div class="modal-content">
+      <form
+        id="inputForm"
+        hx-post="/submit"
+        hx-swap="none"
+        hx-on::after-request="handleAfterSubmit(event)"
+      >
+        <div class="modal-header">
+          <h3>Enter Text</h3>
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="userInput" name="user_input" required placeholder="Type something...">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal JS -->
+  <script>
+  const modal = document.getElementById('inputModal');
+  const openBtn = document.getElementById('openModalBtn');
+
+  openBtn.addEventListener('click', () => {
+    modal.classList.add('show');
+  });
+
+  function closeModal() {
+    modal.classList.remove('show');
+  }
+
+  function handleAfterSubmit(event) {
+    closeModal();
+    document.getElementById('userInput').value = '';
+  }
+
+  // Close modal when clicking outside the box
+  window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
+</script>
+
+</body>
+</html>
